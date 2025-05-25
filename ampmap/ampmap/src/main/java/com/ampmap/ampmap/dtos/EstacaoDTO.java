@@ -1,10 +1,19 @@
 package com.ampmap.ampmap.dtos;
 
 import com.ampmap.ampmap.enumn.EstacaoStatus;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
-//mudar o tipo dos atributos caso necessario, nn tenho ideia ainda dos tipos
 public record EstacaoDTO(
+        UUID id,
+        String nome,
+        String descricao,
         String conector,
         Double potencia,
-        EstacaoStatus status) {
+        BigDecimal valorPorHora, // Adicionado
+        EstacaoStatus status,
+        List<String> fotosUrls // Adicionado
+
+) {
 }

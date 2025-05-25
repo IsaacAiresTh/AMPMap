@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: ampmap
+
+  output:
+    ansi:
+      enabled: always
+
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/ampmap}
+    password: ${DATASOURCE_PASSWORD:postgres} # caso n passe nenhuma senha nas variaveis, vai pegar a "postgres" como padrao
+    username: ${DATASOURCE_USERNAME:postgres} # mesmo caso da senha
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

@@ -1,6 +1,7 @@
 package com.ampmap.ampmap.controllers;
 
 import com.ampmap.ampmap.dtos.EstacaoDTO; // Importar o DTO
+import com.ampmap.ampmap.enumn.EstacaoStatus;
 import com.ampmap.ampmap.model.entities.Estacao;
 import com.ampmap.ampmap.services.EstacaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,12 +39,12 @@ public class EstacaoController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Estacao(oes) encontrada(s) com sucesso!"), // Ajuste na descrição
     })
-    public ResponseEntity<List<EstacaoDTO>> obterEstacaoPorFiltros(@RequestParam(value = "conector", required = false) String conector, @RequestParam(value = "potencia", required = false) Double potencia, @RequestParam(value = "status", required = false) String status)
+    public ResponseEntity<List<EstacaoDTO>> obterEstacaoPorFiltros(@RequestParam(value = "conector", required = false) String conector, @RequestParam(value = "potencia", required = false) Double potencia, @RequestParam(value = "status", required = false) EstacaoStatus status)
     {
         List<Estacao> estacoesEncontradas = estacaoService.obterEstacaoPorFiltros(conector, potencia, status);
         List<EstacaoDTO> estacoesDTO = estacoesEncontradas.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());// Para o mapeamento
         return ResponseEntity.ok(estacoesDTO);
     }
 }

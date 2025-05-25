@@ -1,5 +1,6 @@
 package com.ampmap.ampmap.model.entities;
 
+import com.ampmap.ampmap.enumn.EstacaoStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class Estacao {
 
     private Double potencia;
 
-    private String status;
+    private EstacaoStatus status;
 
     //colocar atributos restantes
 }

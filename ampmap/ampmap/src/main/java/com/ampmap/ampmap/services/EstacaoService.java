@@ -1,6 +1,6 @@
 package com.ampmap.ampmap.services;
 
-import com.ampmap.ampmap.dtos.EstacaoDTO; // Não é usado diretamente aqui, mas o controller usará
+import com.ampmap.ampmap.enumn.EstacaoStatus;
 import com.ampmap.ampmap.model.entities.Estacao;
 import com.ampmap.ampmap.repositories.EstacaoRepository;
 import org.springframework.data.domain.Example;
@@ -19,7 +19,7 @@ public class EstacaoService {
     }
 
     //metodo para obter as estacoes por filtros, usando o Example
-    public List<Estacao> obterEstacaoPorFiltros(String conector, Double potencia, String status) {
+    public List<Estacao> obterEstacaoPorFiltros(String conector, Double potencia, EstacaoStatus status) {
         Estacao estacao = new Estacao();
         estacao.setConector(conector);
         estacao.setPotencia(potencia);

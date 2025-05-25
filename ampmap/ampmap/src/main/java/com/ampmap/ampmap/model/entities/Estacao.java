@@ -18,7 +18,7 @@ public class Estacao {
 
     private String conector;
 
-    private String potencia;
+    private Double potencia;
 
     private String status;
 

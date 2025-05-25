@@ -1,6 +1,6 @@
 package com.ampmap.ampmap.services;
 
-import com.ampmap.ampmap.dtos.EstacaoDTO;
+import com.ampmap.ampmap.dtos.EstacaoDTO; // Não é usado diretamente aqui, mas o controller usará
 import com.ampmap.ampmap.model.entities.Estacao;
 import com.ampmap.ampmap.repositories.EstacaoRepository;
 import org.springframework.data.domain.Example;
@@ -19,7 +19,7 @@ public class EstacaoService {
     }
 
     //metodo para obter as estacoes por filtros, usando o Example
-    public List<Estacao> obterEstacaoPorFiltros(String conector, String potencia, String status) {
+    public List<Estacao> obterEstacaoPorFiltros(String conector, Double potencia, String status) {
         Estacao estacao = new Estacao();
         estacao.setConector(conector);
         estacao.setPotencia(potencia);
@@ -27,12 +27,13 @@ public class EstacaoService {
 
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
-                .withIgnoreCase()
-                .withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.STARTING);
+                .withIgnoreCase() // Apenas uma vez é necessário
+                // .withStringMatcher(ExampleMatcher.StringMatcher.STARTING); // Avalie se STARTING é o ideal
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // Ou CONTAINING para mais flexibilidade
 
         Example<Estacao> example = Example.of(estacao, matcher);
 
         return estacaoRepository.findAll(example);
-    };
+    }
 }
+    

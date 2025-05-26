@@ -6,7 +6,18 @@ import com.ampmap.ampmap.model.entities.Estacao;
 public class EstacaoMapper {
 
     public static EstacaoDTO convertToDto(Estacao estacao) {
-        return new EstacaoDTO(estacao.getConector(), estacao.getPotencia(), estacao.getStatus());
-        // Adicione outros campos conforme necessário quando o DTO e a Entidade estiverem completos
+        if (estacao == null) {
+            return null;
+        }
+        return new EstacaoDTO(
+                estacao.getId(),
+                estacao.getNome(),
+                estacao.getDescricao(),
+                estacao.getConector(),
+                estacao.getPotencia(),
+                estacao.getValorPorHora(),
+                estacao.getStatus(),
+                estacao.getFotosUrls()
+        );
     }
 }

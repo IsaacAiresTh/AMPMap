@@ -21,6 +21,7 @@ public class Estacao {
 
     private Double potencia;
 
+    @Enumerated(EnumType.STRING)
     private EstacaoStatus status;
 
     //colocar atributos restantes

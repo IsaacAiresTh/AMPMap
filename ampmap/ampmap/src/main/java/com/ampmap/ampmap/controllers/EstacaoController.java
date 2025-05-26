@@ -3,6 +3,7 @@ package com.ampmap.ampmap.controllers;
 import com.ampmap.ampmap.dtos.EstacaoDTO; // Importar o DTO
 import com.ampmap.ampmap.enumn.EstacaoStatus;
 import com.ampmap.ampmap.model.entities.Estacao;
+import com.ampmap.ampmap.model.mappers.EstacaoMapper;
 import com.ampmap.ampmap.services.EstacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,11 +29,11 @@ public class EstacaoController {
         this.estacaoService = estacaoService;
     }
 
-    // Método auxiliar para mapear Entidade para DTO
-    private EstacaoDTO convertToDto(Estacao estacao) {
-        return new EstacaoDTO(estacao.getConector(), estacao.getPotencia(), estacao.getStatus());
-        // Adicione outros campos conforme necessário quando o DTO e a Entidade estiverem completos
-    }
+//    // Método auxiliar para mapear Entidade para DTO
+//    private EstacaoDTO convertToDto(Estacao estacao) {
+//        return new EstacaoDTO(estacao.getConector(), estacao.getPotencia(), estacao.getStatus());
+//        // Adicione outros campos conforme necessário quando o DTO e a Entidade estiverem completos
+//    }
 
     @GetMapping
     @Operation(summary = "Obter uma estacao passando parametros")
@@ -43,7 +44,7 @@ public class EstacaoController {
     {
         List<Estacao> estacoesEncontradas = estacaoService.obterEstacaoPorFiltros(conector, potencia, status);
         List<EstacaoDTO> estacoesDTO = estacoesEncontradas.stream()
-                .map(this::convertToDto)
+                .map(EstacaoMapper::convertToDto)
                 .collect(Collectors.toList());// Para o mapeamento
         return ResponseEntity.ok(estacoesDTO);
     }

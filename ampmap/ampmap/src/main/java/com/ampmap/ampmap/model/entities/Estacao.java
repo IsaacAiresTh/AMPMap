@@ -44,6 +44,9 @@ public class Estacao {
     // Se for opcional no cadastro, não precisa de @NotNull aqui, mas pode ter no DTO de busca.
     private Double potencia; // Ex: 11.5 (para kW)
 
+
+    @Enumerated(EnumType.STRING)
+
     @NotNull(message = "O valor por hora é obrigatório.")
     @DecimalMin(value = "0.0", inclusive = false, message = "O valor por hora deve ser positivo.")
     @Digits(integer = 6, fraction = 2, message = "O valor por hora deve ter no máximo 2 casas decimais.")
@@ -52,6 +55,7 @@ public class Estacao {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "O status da estação é obrigatório.")
+
     private EstacaoStatus status;
 
     // Para as fotos, uma abordagem comum é armazenar as URLs das imagens.

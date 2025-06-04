@@ -71,4 +71,7 @@ public class Estacao {
     // @JoinColumn(name = "usuario_id", nullable = false)
     // private Usuario dono;
 
+    @OneToMany(mappedBy = "Estacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
 }

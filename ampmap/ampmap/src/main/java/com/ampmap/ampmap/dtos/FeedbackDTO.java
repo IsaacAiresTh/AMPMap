@@ -2,6 +2,8 @@ package com.ampmap.ampmap.dtos;
 
 import jakarta.validation.constraints.*;
 
+import java.util.UUID;
+
 public record FeedbackDTO(
 
         @NotBlank(message = "O comentário é obrigatório.")

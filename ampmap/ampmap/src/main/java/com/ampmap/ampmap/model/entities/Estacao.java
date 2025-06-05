@@ -39,8 +39,6 @@ public class Estacao {
     @Column(nullable = false)
     private String conector;
 
-    // Ele não foi listado como obrigatório nas novas regras de *cadastro*,
-    // mas pode ser importante para filtros ou outras funcionalidades.
     // Se for opcional no cadastro, não precisa de @NotNull aqui, mas pode ter no DTO de busca.
     private Double potencia; // Ex: 11.5 (para kW)
 

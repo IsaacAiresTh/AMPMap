@@ -1,11 +1,11 @@
 package com.ampmap.ampmap.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +31,7 @@ public class Feedback {
     private Integer nota;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "estacao_id")
     private Estacao estacao;
 }

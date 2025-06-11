@@ -43,7 +43,7 @@ public class Estacao {
     private Double potencia; // Ex: 11.5 (para kW)
 
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
 
     @NotNull(message = "O valor por hora é obrigatório.")
     @DecimalMin(value = "0.0", inclusive = false, message = "O valor por hora deve ser positivo.")
@@ -69,7 +69,7 @@ public class Estacao {
     // @JoinColumn(name = "usuario_id", nullable = false)
     // private Usuario dono;
 
-    @OneToMany(mappedBy = "Estacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "estacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbacks = new ArrayList<>();
 
 }

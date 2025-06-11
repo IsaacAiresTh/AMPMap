@@ -16,6 +16,7 @@ public class EstacaoMapper {
                 estacao.getConector(),
                 estacao.getPotencia(),
                 estacao.getValorPorHora(),
+                estacao.getFeedbacks(),
                 estacao.getStatus(),
                 estacao.getFotosUrls()
         );

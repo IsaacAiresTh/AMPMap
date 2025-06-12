@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    # --- ADICIONE ESTA SEÇÃO DE HEALTHCHECK ---
+    healthcheck:
+      # Comando que verifica se o postgres está pronto para aceitar conexões
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s   # Tenta a cada 10 segundos
+      timeout: 5s     # Espera no máximo 5 segundos pela resposta
+      retries: 5      # Tenta 5 vezes antes de marcar como "unhealthy"
+
+  app:
+    build: .
+    # --- ALTERE A SEÇÃO DEPENDS_ON PARA ISTO ---
+    depends_on:
+      postgres:
+        condition: service_healthy # Só inicia a APP quando o healthcheck do POSTGRES passar
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - JWT_SECRET=SuaChaveSecretaSuperSeguraComPeloMenos32CaracteresParaHS256
+      - JWT_EXPIRATION=3600000
+
+volumes:
+  postgres-data:

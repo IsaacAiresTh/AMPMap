@@ -9,7 +9,7 @@ app:
     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
     - SPRING_DATASOURCE_USERNAME=myuser
     - SPRING_DATASOURCE_PASSWORD=secret
-    - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    - SPRING_JPA_HIBERNATE_DDL_AUTO=create
 
 
     - JWT_SECRET=SuaChaveSecretaSuperSeguraComPeloMenos32CaracteresParaHS256

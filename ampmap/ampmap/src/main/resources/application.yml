@@ -14,3 +14,7 @@ app:
 
     - JWT_SECRET=SuaChaveSecretaSuperSeguraComPeloMenos32CaracteresParaHS256
     - JWT_EXPIRATION=3600000
+
+geocoding:
+  nominatim:
+    url: "https://nominatim.openstreetmap.org/search"

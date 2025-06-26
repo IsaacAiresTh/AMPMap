@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +38,11 @@ public class Estacao {
     @Column(nullable = false)
     private String conector;
 
-    // Se for opcional no cadastro, não precisa de @NotNull aqui, mas pode ter no DTO de busca.
+    // Se for opcional no cadastro, não precisa de @NotNull aqui, mas pode ter no
+    // DTO de busca.
     private Double potencia; // Ex: 11.5 (para kW)
 
-
-//    @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
 
     @NotNull(message = "O valor por hora é obrigatório.")
     @DecimalMin(value = "0.0", inclusive = false, message = "O valor por hora deve ser positivo.")
@@ -57,19 +56,27 @@ public class Estacao {
     private EstacaoStatus status;
 
     // Para as fotos, uma abordagem comum é armazenar as URLs das imagens.
-    // O upload real seria tratado no serviço, salvando os arquivos em algum lugar (disco, S3, etc.)
+    // O upload real seria tratado no serviço, salvando os arquivos em algum lugar
+    // (disco, S3, etc.)
     // e guardando os caminhos/URLs aqui.
     @ElementCollection // Se as URLs forem simples Strings e parte da entidade Estacao
     @CollectionTable(name = "estacao_fotos", joinColumns = @JoinColumn(name = "estacao_id"))
     @Column(name = "foto_url")
     private List<String> fotosUrls = new ArrayList<>();
 
-    // Relacionamento com Usuário (Dono do Posto) - a ser implementado
-    // @ManyToOne
-    // @JoinColumn(name = "usuario_id", nullable = false)
-    // private Usuario dono;
-
     @OneToMany(mappedBy = "estacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbacks = new ArrayList<>();
+
+    @NotNull(message = "A latitude é obrigatória.")
+    @Column(nullable = false)
+    private Double latitude;
+
+    @NotNull(message = "A longitude é obrigatória.")
+    @Column(nullable = false)
+    private Double longitude;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario dono;
 
 }

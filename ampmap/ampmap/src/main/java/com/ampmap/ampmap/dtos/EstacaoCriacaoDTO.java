@@ -1,9 +1,10 @@
+// Código do EstacaoCriacaoDTO.java atualizado
+
 package com.ampmap.ampmap.dtos;
 
-import com.ampmap.ampmap.enumn.EstacaoStatus; // Se o status for definido na criação
+import com.ampmap.ampmap.enumn.EstacaoStatus;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-// import java.util.List; // Se fosse enviar URLs de fotos prontas, mas vamos usar MultipartFile no controller
 
 // DTO para receber os dados de cadastro de uma nova estação
 public record EstacaoCriacaoDTO(
@@ -15,6 +16,7 @@ public record EstacaoCriacaoDTO(
 
         @NotBlank(message = "O tipo de conector é obrigatório.")
         String conector,
+
         Double potencia,
 
         @NotNull(message = "O valor por hora é obrigatório.")
@@ -22,13 +24,24 @@ public record EstacaoCriacaoDTO(
         @Digits(integer = 6, fraction = 2, message = "O valor por hora deve ter no máximo 2 casas decimais.")
         BigDecimal valorPorHora,
 
+        EstacaoStatus status,
 
-        EstacaoStatus status
-)
+        // --- CAMPOS DE ENDEREÇO ADICIONADOS ---
+        @NotBlank(message = "O logradouro (rua, avenida) é obrigatório.")
+        String logradouro,
 
+        @NotBlank(message = "O número é obrigatório.")
+        String numero,
+        
+        String bairro,
 
-{
-    // O campo de fotos será tratado como MultipartFile[] no controller, não diretamente neste DTO.
-    // Se você quisesse que o DTO carregasse informações sobre as fotos (ex: metadados),
-    // poderia adicionar campos aqui, mas o upload em si é separado.
+        @NotBlank(message = "A cidade é obrigatória.")
+        String cidade,
+
+        @NotBlank(message = "O estado (UF) é obrigatório.")
+        String estado,
+
+        @NotBlank(message = "O CEP é obrigatório.")
+        String cep
+) {
 }

@@ -1,6 +1,5 @@
 package com.ampmap.ampmap.services;
 
-import com.ampmap.ampmap.model.entities.Usuario;
 import com.ampmap.ampmap.repositories.UsuarioRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

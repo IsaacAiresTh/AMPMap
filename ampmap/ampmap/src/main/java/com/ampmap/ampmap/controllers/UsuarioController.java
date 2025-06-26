@@ -1,8 +1,6 @@
 package com.ampmap.ampmap.controllers;
 
 import com.ampmap.ampmap.dtos.UsuarioDTO;
-import com.ampmap.ampmap.model.entities.Usuario;
-import com.ampmap.ampmap.repositories.UsuarioRepository;
 import com.ampmap.ampmap.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

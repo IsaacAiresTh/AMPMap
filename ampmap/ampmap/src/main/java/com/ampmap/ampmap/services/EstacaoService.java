@@ -1,12 +1,19 @@
+// Código completo do EstacaoService.java atualizado com Geocoding
+
 package com.ampmap.ampmap.services;
 
 import com.ampmap.ampmap.dtos.EstacaoCriacaoDTO;
+import com.ampmap.ampmap.dtos.EstacaoDTO;
 import com.ampmap.ampmap.enumn.EstacaoStatus;
 import com.ampmap.ampmap.model.entities.Estacao;
+import com.ampmap.ampmap.model.entities.Usuario;
+import com.ampmap.ampmap.model.mappers.EstacaoMapper;
 import com.ampmap.ampmap.repositories.EstacaoRepository;
-// import com.ampmap.ampmap.services.FileStorageService; // Um serviço hipotético para salvar arquivos
+import com.ampmap.ampmap.repositories.UsuarioRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map; // <-- IMPORTAR MAP
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,16 +33,16 @@ import java.util.stream.Collectors;
 public class EstacaoService {
 
     private final EstacaoRepository estacaoRepository;
-    // Para o armazenamento de arquivos, você pode injetar um serviço específico.
-    // Exemplo simplificado de armazenamento em diretório local:
-    private final Path rootLocation = Paths.get("upload-dir"); // Configure no application.properties
+    private final UsuarioRepository usuarioRepository;
+    private final GeocodingService geocodingService; // <-- INJETAR O NOVO SERVIÇO
+    private final Path rootLocation = Paths.get("upload-dir");
 
-    // @Autowired
-    // private FileStorageService fileStorageService; // Exemplo de serviço dedicado
 
-    public EstacaoService(EstacaoRepository estacaoRepository) {
+    // <-- ATUALIZAR CONSTRUTOR PARA INCLUIR O GeocodingService
+    public EstacaoService(EstacaoRepository estacaoRepository, UsuarioRepository usuarioRepository, GeocodingService geocodingService) {
         this.estacaoRepository = estacaoRepository;
-        // Criar o diretório de upload se não existir (para o exemplo simplificado)
+        this.usuarioRepository = usuarioRepository;
+        this.geocodingService = geocodingService; // <-- ATRIBUIR O SERVIÇO
         try {
             if (!Files.exists(rootLocation)) {
                 Files.createDirectories(rootLocation);
@@ -44,16 +52,32 @@ public class EstacaoService {
         }
     }
 
-    @Transactional // Garante que ou tudo é salvo (entidade + referências de fotos) ou nada
-    public Estacao criarEstacao(EstacaoCriacaoDTO dto, MultipartFile[] fotos) {
+    @Transactional
+    public EstacaoDTO criarEstacao(EstacaoCriacaoDTO dto, MultipartFile[] fotos) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario dono = usuarioRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+
+        // <-- CHAMAR O SERVIÇO DE GEOCODIFICAÇÃO
+        Map<String, Double> coordinates = geocodingService.getCoordinatesFromAddress(
+            dto.logradouro(),
+            dto.numero(),
+            dto.cidade(),
+            dto.estado()
+        );
+
         Estacao estacao = new Estacao();
         estacao.setNome(dto.nome());
         estacao.setDescricao(dto.descricao());
         estacao.setConector(dto.conector());
         estacao.setPotencia(dto.potencia());
         estacao.setValorPorHora(dto.valorPorHora());
+        estacao.setDono(dono);
 
-        // Definir um status padrão se não vier no DTO, ou usar o do DTO
+        // <-- SALVAR LATITUDE E LONGITUDE VINDAS DO SERVIÇO DE GEOCODIFICAÇÃO
+        estacao.setLatitude(coordinates.get("latitude"));
+        estacao.setLongitude(coordinates.get("longitude"));
+
         if (dto.status() != null) {
             estacao.setStatus(dto.status());
         } else {
@@ -64,16 +88,11 @@ public class EstacaoService {
         if (fotos != null && fotos.length > 0) {
             for (MultipartFile foto : fotos) {
                 if (!foto.isEmpty()) {
-                    // Lógica para salvar o arquivo (exemplo simplificado)
-                    // Em um cenário real, use um serviço dedicado e robusto para armazenamento (ex: S3, Azure Blob)
-                    // e gere URLs acessíveis publicamente ou protegidas.
                     String filename = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
                     try {
                         Files.copy(foto.getInputStream(), this.rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-                        // A URL aqui seria relativa ao seu sistema de arquivos ou a URL pública se em nuvem
-                        urlsSalvas.add("/uploads/" + filename); // Exemplo de URL (ajuste conforme sua config de servir estáticos)
+                        urlsSalvas.add("/uploads/" + filename);
                     } catch (IOException e) {
-                        // Tratar exceção de falha no upload (rollback, log, etc.)
                         throw new RuntimeException("Falha ao salvar a foto: " + filename, e);
                     }
                 }
@@ -81,14 +100,11 @@ public class EstacaoService {
         }
         estacao.setFotosUrls(urlsSalvas);
 
-        // Adicionar lógica para associar ao "Dono do Posto" (Usuário) quando implementado
-        // User dono = userRepository.findById(idDoDonoLogado).orElseThrow(...);
-        // estacao.setDono(dono);
-
-        return estacaoRepository.save(estacao);
+        Estacao novaEstacao = estacaoRepository.save(estacao);
+        return EstacaoMapper.convertToDto(novaEstacao);
     }
 
-    public List<Estacao> obterEstacaoPorFiltros(String conector, Double potencia, EstacaoStatus status) {
+    public List<EstacaoDTO> obterEstacaoPorFiltros(String conector, Double potencia, EstacaoStatus status) {
         Estacao estacaoFiltro = new Estacao();
         estacaoFiltro.setConector(conector);
         estacaoFiltro.setPotencia(potencia);
@@ -101,6 +117,61 @@ public class EstacaoService {
                 .withIgnoreNullValues();
 
         Example<Estacao> example = Example.of(estacaoFiltro, matcher);
-        return estacaoRepository.findAll(example);
+        List<Estacao> estacoes = estacaoRepository.findAll(example);
+        return estacoes.stream()
+                       .map(EstacaoMapper::convertToDto)
+                       .collect(Collectors.toList());
+    }
+
+    public EstacaoDTO obterEstacaoPorId(UUID id) {
+        Estacao estacao = estacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estação não encontrada com o ID: " + id));
+        return EstacaoMapper.convertToDto(estacao);
+    }
+    
+    @Transactional
+    public EstacaoDTO atualizarEstacao(UUID id, EstacaoCriacaoDTO dto) {
+        Estacao estacao = estacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estação não encontrada com o ID: " + id));
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!estacao.getDono().getEmail().equals(userEmail)) {
+            throw new AccessDeniedException("Acesso negado. Você não é o proprietário desta estação.");
+        }
+
+        // <-- LÓGICA DE ATUALIZAÇÃO DE ENDEREÇO E COORDENADAS
+        Map<String, Double> coordinates = geocodingService.getCoordinatesFromAddress(
+            dto.logradouro(),
+            dto.numero(),
+            dto.cidade(),
+            dto.estado()
+        );
+        estacao.setLatitude(coordinates.get("latitude"));
+        estacao.setLongitude(coordinates.get("longitude"));
+
+        estacao.setNome(dto.nome());
+        estacao.setDescricao(dto.descricao());
+        estacao.setConector(dto.conector());
+        estacao.setPotencia(dto.potencia());
+        estacao.setValorPorHora(dto.valorPorHora());
+        if (dto.status() != null) {
+            estacao.setStatus(dto.status());
+        }
+
+        Estacao estacaoAtualizada = estacaoRepository.save(estacao);
+        return EstacaoMapper.convertToDto(estacaoAtualizada);
+    }
+
+    @Transactional
+    public void deletarEstacao(UUID id) {
+        Estacao estacao = estacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estação não encontrada com o ID: " + id));
+        
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!estacao.getDono().getEmail().equals(userEmail)) {
+            throw new AccessDeniedException("Acesso negado. Você não é o proprietário desta estação.");
+        }
+
+        estacaoRepository.delete(estacao);
     }
 }

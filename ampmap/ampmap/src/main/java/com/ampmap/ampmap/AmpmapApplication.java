@@ -2,6 +2,8 @@ package com.ampmap.ampmap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class AmpmapApplication {
@@ -10,4 +12,8 @@ public class AmpmapApplication {
 		SpringApplication.run(AmpmapApplication.class, args);
 	}
 
+	@Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

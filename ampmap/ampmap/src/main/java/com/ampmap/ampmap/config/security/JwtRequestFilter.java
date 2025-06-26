@@ -1,6 +1,5 @@
 package com.ampmap.ampmap.config.security;
 
-import com.ampmap.ampmap.config.security.JwtUtil;
 import com.ampmap.ampmap.services.AppUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
